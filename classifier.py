@@ -19,6 +19,7 @@ def clean_data(data):
     contents_list = data_contents.split()
     contents_list.sort()
     contents_list = [x.lower() for x in contents_list] #to lower case all words
+    contents_list = stop_words(contents_list)
     return contents_list
 
 def remove_stop_words(input_data):
@@ -33,3 +34,4 @@ def remove_stop_words(input_data):
         if word not in list_contents:
             words.append(word)    
     return words
+
