@@ -9,3 +9,7 @@ def path_train_data():
     cwd = current_working_dir()
     return "{}/training_data/".format(cwd)
 
+def path_test_data():
+    cwd = current_working_dir()
+    return "{}/testing_data".format(cwd)
+
