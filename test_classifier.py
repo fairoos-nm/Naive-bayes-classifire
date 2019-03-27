@@ -2,9 +2,11 @@
 
 import classifier
 import os
-cwd = os.getcwd()
+
+cwd = classifier.current_working_dir()
+
 def test_current_working_dir():
     assert classifier.current_working_dir() == "{}".format(cwd)
 
 def test_path_train_data():
-    assert classifier.path_train_data == "{}".format(cwd)+ "/training_data/"
+    assert classifier.path_train_data() == "{}/training_data/".format(cwd)
