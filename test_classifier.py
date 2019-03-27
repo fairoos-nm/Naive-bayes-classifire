@@ -15,7 +15,7 @@ def test_test_data():
     assert classifier.path_test_data() == "{}/testing_data".format(cwd)
 
 def test_clean_data():
-    assert classifier.clean_data("hello  i am // here. :") == ['am', 'hello', 'here', 'i']
+    assert classifier.clean_data("hello  i am // here. :") == ['hello']
 
 def test_remove_stop_words():
     classifier.remove_stop_words(['am', 'hello', 'here', 'i']) == ['hello']
