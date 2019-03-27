@@ -13,3 +13,6 @@ def test_path_train_data():
 
 def test_test_data():
     assert classifier.path_test_data() == "{}/testing_data".format(cwd)
+
+def test_clean_data():
+    assert classifier.clean_data("hello  i am // here. :") == ["hello", "i", "am", "here"] 
