@@ -35,3 +35,19 @@ def remove_stop_words(input_data):
             words.append(word)    
     return words
 
+def words_in_dir(path):
+    files_contents = ''
+    for filename in os.listdir(path):
+        print(filename)
+        file_path = os.path.join(path, filename)
+        opened_file = open(file_path)
+        content = opened_file.read()
+        files_contents += content
+    words_list = clean_data(files_contents)
+    return words_list
+
+def train_data():
+    pass
+
+path = path_test_data()
+print(words_in_dir(path))
