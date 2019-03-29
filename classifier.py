@@ -1,6 +1,7 @@
 import os
 import re
 from collections import Counter
+from decimal import Decimal
 
 def current_working_dir():
     cwd = os.getcwd()
@@ -61,8 +62,29 @@ def count_duplicate(path):
     counts = Counter(list_words)
     return counts
 
+def trained_datas(path):
+    count_of_possible_words = possible_words(path)
+    probability_dict = {}
+    for dire in os.listdir(path):
+        list_of_probability = list()
+        dict_of_an_item = {}
+        dir_path = os.path.join(path, dire)
+        total_words = len(words_in_dir(dir_path))
+        words_count = count_duplicate(dir_path)
+        keys = words_count.keys()
+        values = words_count.values()
+        for value in values:
+            probability = Decimal((value + 1) / (total_words + count_of_possible_words ))
+            list_of_probability.append(probability)
+        for word, probability in zip(keys, list_of_probability):
+            dict_of_an_item.update({word:probability})
+        probability_dict.update({dire:dict_of_an_item})
+    return probability_dict
+
 def train_data():
     pass
 
-data_path= path_test_data()
-print(count_duplicate(data_path))
+#probability_of_words(path_train_data())
+
+# data_path= path_test_data()
+# print(count_duplicate(data_path))
