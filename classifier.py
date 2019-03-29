@@ -46,8 +46,19 @@ def words_in_dir(path):
     words_list = clean_data(files_contents)
     return words_list
 
+def possible_words(data_path):
+    """to count all possible words in training data"""
+    list_words = []
+    for dir in os.listdir(data_path):
+        path = ("{}{}".format(data_path, dir))
+        list_words.extend(words_in_dir(path)) # combain lists
+        list_words = list(dict.fromkeys(list_words)) # rm duplicates from List:
+        list_words = remove_stop_words(list_words)
+    count = len(list_words)
+    return count
+
 def train_data():
     pass
 
-path = path_test_data()
-print(words_in_dir(path))
+data_path= path_train_data()
+print(possible_words(data_path))
