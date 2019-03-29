@@ -28,8 +28,8 @@ def test_words_in_dir():
 def test_possible_words():
     assert classifier.possible_words(demo_train_data) == 7
 
-def test_count_duplicat():
-    assert classifier.count_duplicat(test_data_dir) == {'election':2, 'game':1, 'match':1, 'time':1}
+def test_count_duplicate():
+    assert classifier.count_duplicate(test_data_dir) == {'election':2, 'game':1, 'match':1, 'time':1}
     
 def test_train_data():
     assert classifirer.train_data(demo_train_data) == {"sports_data":{"grate":1, "game":2, "very":1, "clean":2, "match":1, "forgettable":1}, "non_sports_data":{"election":2, "close":1}}

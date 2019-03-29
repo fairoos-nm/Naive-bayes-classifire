@@ -1,6 +1,6 @@
 import os
 import re
-
+from collections import Counter
 
 def current_working_dir():
     cwd = os.getcwd()
@@ -38,7 +38,6 @@ def remove_stop_words(input_data):
 def words_in_dir(path):
     files_contents = ''
     for filename in os.listdir(path):
-        print(filename)
         file_path = os.path.join(path, filename)
         opened_file = open(file_path)
         content = opened_file.read()
@@ -57,8 +56,13 @@ def possible_words(data_path):
     count = len(list_words)
     return count
 
+def count_duplicate(path):
+    list_words = words_in_dir(path)
+    counts = Counter(list_words)
+    return counts
+
 def train_data():
     pass
 
-data_path= path_train_data()
-print(possible_words(data_path))
+data_path= path_test_data()
+print(count_duplicate(data_path))
