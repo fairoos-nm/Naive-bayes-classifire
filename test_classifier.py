@@ -10,7 +10,7 @@ dir_of_nonsports = demo_train_data+"/non_sports_data"
 dir_of_sports = demo_train_data+"/sports_data"
 
 def test_current_working_dir():
-    assert classifier.current_working_dir() == "{}".format(cwd)
+    assert classifier.current_working_dir() == "{}" .format(cwd)
 
 def test_path_train_data():
     assert classifier.path_train_data() == "{}/training_data/".format(cwd)
@@ -44,4 +44,9 @@ def test_trained_datas():
                                                                         'forgettable':0.142857142857142849212692681248881854116916656494140625,
                                                                         'great':0.142857142857142849212692681248881854116916656494140625,
                                                                         'match':0.142857142857142849212692681248881854116916656494140625}}
+
+def test_count_files():
+    list_directory = os.listdir(demo_train_data)
+    path = demo_train_data
+    assert classifier.count_files(list_directory, path) == 5
     
