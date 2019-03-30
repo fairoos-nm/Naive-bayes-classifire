@@ -90,14 +90,10 @@ def count_files(list_directory, path):
         count += len(os.listdir("{}{}".format(path, directory)))
     return count
 
-def probability_of_absence(path):
+def probability_of_absence(path, item):
     count_of_possible_words = possible_words(path)
-    probability_dict = {}
-    for dire in os.listdir(path):
-        dir_path = os.path.join(path, dire)
-        total_words = len(words_in_dir(dir_path))
+    dir_path = os.path.join(path, item)
+    total_words = len(words_in_dir(dir_path))
     probability = Decimal( 1 / (count_of_possible_words + total_words))
     return probability
 
-
-                    

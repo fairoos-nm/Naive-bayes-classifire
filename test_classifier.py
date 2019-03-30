@@ -51,6 +51,8 @@ def test_count_files():
     assert classifier.count_files(list_directory, path) == 5
 
 def test_prob_of_absent():
-    assert classifier.probability_of_absence(demo_train_data) == 0.1000000000000000055511151231257827021181583404541015625
+    assert classifier.probability_of_absence(demo_train_data, dir_of_nonsports) == 0.1000000000000000055511151231257827021181583404541015625
+    assert classifier.probability_of_absence(demo_train_data, dir_of_sports) == 0.0714285714285714246063463406244409270584583282470703125
+
 
 
