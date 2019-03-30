@@ -2,6 +2,7 @@
 
 import classifier
 import os
+from decimal import Decimal
 
 cwd = classifier.current_working_dir()
 demo_train_data = "{}/pytest_data/training_data/".format(cwd)
@@ -54,5 +55,10 @@ def test_prob_of_absent():
     assert classifier.probability_of_absence(demo_train_data, dir_of_nonsports) == 0.1000000000000000055511151231257827021181583404541015625
     assert classifier.probability_of_absence(demo_train_data, dir_of_sports) == 0.0714285714285714246063463406244409270584583282470703125
 
-
+def test_prediction():
+    assert classifier.prediction(demo_train_data, test_data_dir) == {'sports data': {'non_sports_data': Decimal('0.004000000000000000666133814773'),
+                                                                                     'sports_data': Decimal('0.01836734693877550748516810296')},
+                                                                    'non_sports data': {'non_sports_data':Decimal('0.01200000000000000088817841970'),
+                                                                                        'sports_data': Decimal('0.003061224489795917914194683827')}}
+    
 
