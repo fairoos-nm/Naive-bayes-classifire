@@ -1,3 +1,5 @@
+#classifier.py
+
 import os
 import re
 from collections import Counter
@@ -81,10 +83,10 @@ def trained_datas(path):
         probability_dict.update({dire:dict_of_an_item})
     return probability_dict
 
-def train_data():
-    pass
+def count_files(list_directory, path):
+    """count files in a directory"""
+    count = 0
+    for directory in list_directory:
+        count += len(os.listdir("{}{}".format(path, directory)))
+    return count
 
-#probability_of_words(path_train_data())
-
-# data_path= path_test_data()
-# print(count_duplicate(data_path))
