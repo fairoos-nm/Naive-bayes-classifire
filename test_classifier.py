@@ -60,5 +60,15 @@ def test_prediction():
                                                                                      'sports_data': Decimal('0.01836734693877550748516810296')},
                                                                     'non_sports data': {'non_sports_data':Decimal('0.01200000000000000088817841970'),
                                                                                         'sports_data': Decimal('0.003061224489795917914194683827')}}
+
+def test_percentage():
+    predicted_data =  {'sports data': {'non_sports_data': Decimal('0.004000000000000000666133814773'),
+                                       'sports_data': Decimal('0.01836734693877550748516810296')},
+                       'non_sports data': {'non_sports_data':Decimal('0.01200000000000000088817841970'),
+                                           'sports_data': Decimal('0.003061224489795917914194683827')}}
+    assert classifier.get_percentage(predicted_data) == {'sports data': {'non_sports_data': Decimal('17.88321167883212140771907556'),
+                                                                         'sports_data': Decimal('82.11678832116787859228092445')},
+                                                         'non_sports data': {'non_sports_data': Decimal('79.67479674796748327060137526'),
+                                                                             'sports_data': Decimal('20.32520325203251672939862472')}}
     
 
