@@ -4,6 +4,9 @@ import os
 import re
 from collections import Counter
 from decimal import Decimal
+from collections import OrderedDict
+import time
+from tqdm import tqdm
 
 def current_working_dir():
     cwd = os.getcwd()
@@ -19,6 +22,7 @@ def path_test_data():
 
 def clean_data(data):
     data_contents = re.sub(r'[^\w\s]', '', data) #remove punctuation
+    data_contents = ''.join([i for i in data_contents if not i.isdigit()]) #remove digits
     contents_list = data_contents.split()
     contents_list.sort()
     contents_list = [x.lower() for x in contents_list] #to lower case all words
@@ -81,6 +85,7 @@ def trained_datas(path):
         for word, probability in zip(keys, list_of_probability):
             dict_of_an_item.update({word:probability})
         probability_dict.update({dire:dict_of_an_item})
+        probability_dict = OrderedDict(probability_dict)
     return probability_dict
 
 def count_files(list_directory, path):
@@ -97,3 +102,41 @@ def probability_of_absence(path, item):
     probability = Decimal( 1 / (count_of_possible_words + total_words))
     return probability
 
+def prediction(path_train_data, path_test_data):
+    #open the first file in test dir and convert that text file in to list of words.
+    #the list dosent contain repeted words and stop words.
+    final_out = dict()
+    for filename in tqdm(os.listdir(path_test_data)):
+        test_file = open("{}/{}".format(path_test_data, filename))
+        contents = test_file.read()
+        words_list_for_test = clean_data(contents)
+        words_list_for_test = list(dict.fromkeys(words_list_for_test)) #remove repeted words
+        
+        #call trained data and convert them in to useable format.
+        trained_words_dict = trained_datas(path_train_data) # format = {matalica :{"hello:4542444, good:45221"}, justin_b:{hello:243}}
+        list_of_dict = list(trained_words_dict.values()) #list contains dict. in that dict we have key as words and values as probability 
+        items = list(trained_words_dict.keys()) #list of items eg: metalica_lyrics ,justin_b....
+        item_prob = dict()
+        for item, single_dict in zip(items, list_of_dict):
+            mux_list = list()
+            absent = probability_of_absence(path_train_data, item)
+            [mux_list.append(single_dict.get(word)) if word in single_dict
+             else mux_list.append(absent) for word in words_list_for_test]
+
+            probability_mux = 1
+            #multiplyig all the values in list.
+            for prob in mux_list:
+                probability_mux = Decimal(probability_mux * prob)   
+            total_files = count_files(os.listdir(path_train_data), path_train_data)
+            file_count_in_item_dir = len(os.listdir('{}{}'.format(path_train_data, item)))
+            prob_of_item = Decimal(file_count_in_item_dir / total_files)
+            #Result of multiplication finaly multiply with probability of an item
+            final_proba = Decimal(probability_mux * prob_of_item)
+            item_prob.update({item:final_proba})
+        final_out.update({filename:item_prob})
+
+    return final_out
+if __name__ == "__main__": 
+    train_data = path_train_data()
+    test_data = path_test_data()
+    print(prediction(train_data, test_data ))
