@@ -134,9 +134,27 @@ def prediction(path_train_data, path_test_data):
             final_proba = Decimal(probability_mux * prob_of_item)
             item_prob.update({item:final_proba})
         final_out.update({filename:item_prob})
-
     return final_out
+
+def get_percentage(predicted_data):
+    name_of_songs = predicted_data.keys()
+    list_of_prdiction = predicted_data.values()
+    return_dict = dict()
+    for name_of_song, dictionary in zip(name_of_songs, list_of_prdiction):
+        items = dictionary.keys()
+        predicted_values = dictionary.values()
+        sum_of_predicted_values = sum(predicted_values)
+        dict_of_percent = dict()
+        for item, predicted_value in zip(items, predicted_values):
+            try:
+                percentage = (predicted_value / sum_of_predicted_values) * 100
+                dict_of_percent.update({item:percentage})
+            except ZeroDivisionError:
+                percentage = 0
+        return_dict.update({name_of_song:dict_of_percent})
+    return return_dict
+
 if __name__ == "__main__": 
     train_data = path_train_data()
     test_data = path_test_data()
-    print(prediction(train_data, test_data ))
+    print(get_percentage(prediction(train_data, test_data )))
