@@ -55,11 +55,15 @@ def test_prob_of_absent():
     assert classifier.probability_of_absence(demo_train_data, dir_of_nonsports) == 0.1000000000000000055511151231257827021181583404541015625
     assert classifier.probability_of_absence(demo_train_data, dir_of_sports) == 0.0714285714285714246063463406244409270584583282470703125
 
+def test_list_test_data():
+    assert classifier.list_test_data(test_data_dir) == [['election', 'time'], ['game', 'match']]
+    
 def test_prediction():
-    assert classifier.prediction(demo_train_data, test_data_dir) == {'sports data': {'non_sports_data': Decimal('0.004000000000000000666133814773'),
-                                                                                     'sports_data': Decimal('0.01836734693877550748516810296')},
-                                                                    'non_sports data': {'non_sports_data':Decimal('0.01200000000000000088817841970'),
-                                                                                        'sports_data': Decimal('0.003061224489795917914194683827')}}
+    list_data = [['election', 'time'], ['game', 'match']]
+    assert classifier.prediction(demo_train_data, test_data_dir, list_data) == {'sports data': {'non_sports_data': Decimal('0.004000000000000000666133814773'),
+                                                                                                'sports_data': Decimal('0.01836734693877550748516810296')},
+                                                                                'non_sports data': {'non_sports_data':Decimal('0.01200000000000000088817841970'),
+                                                                                                    'sports_data': Decimal('0.003061224489795917914194683827')}}
 
 def test_percentage():
     predicted_data =  {'sports data': {'non_sports_data': Decimal('0.004000000000000000666133814773'),
