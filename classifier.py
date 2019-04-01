@@ -6,7 +6,7 @@ from collections import Counter
 from decimal import Decimal
 from collections import OrderedDict
 import time
-from tqdm import tqdm
+import operator
 
 def current_working_dir():
     cwd = os.getcwd()
@@ -102,26 +102,31 @@ def probability_of_absence(path, item):
     probability = Decimal( 1 / (count_of_possible_words + total_words))
     return probability
 
-def prediction(path_train_data, path_test_data):
-    #open the first file in test dir and convert that text file in to list of words.
-    #the list dosent contain repeted words and stop words.
-    final_out = dict()
-    for filename in tqdm(os.listdir(path_test_data)):
+def list_test_data(path_test_data):
+    test_list = list()
+    for filename in (os.listdir(path_test_data)):
         test_file = open("{}/{}".format(path_test_data, filename))
         contents = test_file.read()
         words_list_for_test = clean_data(contents)
         words_list_for_test = list(dict.fromkeys(words_list_for_test)) #remove repeted words
-        
-        #call trained data and convert them in to useable format.
-        trained_words_dict = trained_datas(path_train_data) # format = {matalica :{"hello:4542444, good:45221"}, justin_b:{hello:243}}
-        list_of_dict = list(trained_words_dict.values()) #list contains dict. in that dict we have key as words and values as probability 
-        items = list(trained_words_dict.keys()) #list of items eg: metalica_lyrics ,justin_b....
+        test_list.append(words_list_for_test)
+    return test_list
+
+def prediction(path_train_data, path_test_data, test_list):
+    #open the first file in test dir and convert that text file in to list of words.
+    #the list dosent contain repeted words and stop words.
+    final_out = dict()
+    #call trained data and convert them in to useable format.
+    trained_words_dict = trained_datas(path_train_data) # format = {matalica :{"hello:4542444, good:45221"}, justin_b:{hello:243}}
+    list_of_dict = list(trained_words_dict.values()) #list contains dict. in that dict we have key as words and values as probability 
+    items = list(trained_words_dict.keys()) #list of items eg: metalica_lyrics ,justin_b....
+    for filename, words_list_for_test in zip(os.listdir(path_test_data), test_list):
         item_prob = dict()
         for item, single_dict in zip(items, list_of_dict):
             mux_list = list()
             absent = probability_of_absence(path_train_data, item)
             [mux_list.append(single_dict.get(word)) if word in single_dict
-             else mux_list.append(absent) for word in words_list_for_test]
+            else mux_list.append(absent) for word in words_list_for_test]
 
             probability_mux = 1
             #multiplyig all the values in list.
@@ -154,7 +159,39 @@ def get_percentage(predicted_data):
         return_dict.update({name_of_song:dict_of_percent})
     return return_dict
 
-if __name__ == "__main__": 
+def display_status():
+    percentage_data = get_percentage(predicted_data)
+    name_of_songs = percentage_data.keys()
+    length = len(name_of_songs)
+    percentages = percentage_data.values()
+    name_list = list()
+    highest_lsit = list()
+    success = 0
+    wrong = 0
+    for name_of_song, percentage in zip(name_of_songs, percentages):
+        highest = max(percentage.items(), key=operator.itemgetter(1))[0]
+        print("{} ➩ {}".format(name_of_song, highest ))
+        name = name_of_song.split()
+        highest = highest.split()
+        name = [x.lower() for x in name]
+        highest = [x.lower() for x in highest]
+        if highest[0] == name[0]:
+            success += 1
+        else:
+            wrong += 1
+    print()
+    print("Your model predict {} success and {} Wrong".format(success, wrong))
+    print()
+    success_percentage = (success/length)* 100
+    print("Your system is {} % accurate".format(success_percentage))
+    print()
+    print("💖💖 ⮘⮘Thank You⮚⮚ 💖💖")
+
+
+if __name__ == "__main__" :
     train_data = path_train_data()
     test_data = path_test_data()
-    print(get_percentage(prediction(train_data, test_data )))
+    test_list = list_test_data(test_data)
+    predicted_data = prediction(train_data, test_data, test_list) 
+    get_percentage(predicted_data)
+    display_status()
