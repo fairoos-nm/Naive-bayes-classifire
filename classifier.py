@@ -51,7 +51,7 @@ def words_in_dir(path):
     words_list = clean_data(files_contents)
     return words_list
 
-def possible_words(data_path):
+def count_possible_words(data_path):
     """to count all possible words in training data"""
     list_words = []
     for dir in os.listdir(data_path):
@@ -62,20 +62,20 @@ def possible_words(data_path):
     count = len(list_words)
     return count
 
-def count_duplicate(path):
+def count_duplicates(path):
     list_words = words_in_dir(path)
     counts = Counter(list_words)
     return counts
 
-def trained_datas(path):
-    count_of_possible_words = possible_words(path)
+def train_data(path):
+    count_of_possible_words = count_possible_words(path)
     probability_dict = {}
     for dire in os.listdir(path):
         list_of_probability = list()
         dict_of_an_item = {}
         dir_path = os.path.join(path, dire)
         total_words = len(words_in_dir(dir_path))
-        words_count = count_duplicate(dir_path)
+        words_count = count_duplicates(dir_path)
         keys = words_count.keys()
         values = words_count.values()
         for value in values:
@@ -96,7 +96,7 @@ def count_files(list_directory, path):
 
 def probability_of_absence(path):
     absence_dict = {}
-    count_of_possible_words = possible_words(path)
+    count_of_possible_words = count_possible_words(path)
     for dire in os.listdir(path):
         dir_path = os.path.join(path, dire)
         total_words = len(words_in_dir(dir_path))
@@ -113,7 +113,7 @@ def list_test_data(path_test_data, filename):
     words_dict.update({filename:words_for_test})
     return words_dict
 
-def prediction(trained_data, test_dict, path_train_data, prob_of_absence):
+def predict(trained_data, test_dict, path_train_data, prob_of_absence):
     final_out = dict()
     for file_name, testData in test_dict.items():
         gerne_prob = dict()   
@@ -127,7 +127,7 @@ def prediction(trained_data, test_dict, path_train_data, prob_of_absence):
             for word in testData:
                 if word in trained_dict:
                     value = trained_dict.get(word)
-                    probability_of_present = Decimal(probability_of_present * value)
+                    probability_of_present = Decimal(probability_of_present * Decimal(value))
                 else:
                     probability_of_absent = Decimal(probability_of_absent * absent)        
             probability = Decimal(probability_of_present * probability_of_absent)
@@ -178,14 +178,14 @@ def display_status(percentage_data):
     print("💖💖 ⮘⮘Thank You⮚⮚ 💖💖")
     
 def main():
-    train_data = path_train_data()
-    test_data = path_test_data()
-    prob_of_absence = probability_of_absence(train_data)      
-    trained_data = trained_datas(train_data)
+    train_data_path = path_train_data()
+    test_data_path = path_test_data()
+    prob_of_absence = probability_of_absence(train_data_path)      
+    trained_data = train_data(train_data_path)
     predicted_data_dict = dict()
-    for filename in os.listdir(test_data):
-        test_dict = list_test_data(test_data, filename)
-        predicted_data = prediction(trained_data, test_dict, train_data, prob_of_absence)
+    for filename in os.listdir(test_data_path):
+        test_dict = list_test_data(test_data_path, filename)
+        predicted_data = predict(trained_data, test_dict, train_data_path, prob_of_absence)
         predicted_data_dict.update(predicted_data)
     percentage_data = get_percentage(predicted_data_dict)    
     display_status(percentage_data)
