@@ -5,7 +5,6 @@ import re
 from collections import Counter
 from decimal import Decimal
 from collections import OrderedDict
-import time
 import operator
 
 def current_working_dir():
@@ -25,7 +24,7 @@ def clean_data(data):
     data_contents = ''.join([i for i in data_contents if not i.isdigit()]) #remove digits
     contents_list = data_contents.split()
     contents_list.sort()
-    contents_list = [x.lower() for x in contents_list] #to lower case all words
+    contents_list = [x.lower() for x in contents_list] #to lower case all words    
     contents_list = remove_stop_words(contents_list)
     return contents_list
 
@@ -95,80 +94,71 @@ def count_files(list_directory, path):
         count += len(os.listdir("{}{}".format(path, directory)))
     return count
 
-def probability_of_absence(path, item):
+def probability_of_absence(path):
+    absence_dict = {}
     count_of_possible_words = possible_words(path)
-    dir_path = os.path.join(path, item)
-    total_words = len(words_in_dir(dir_path))
-    probability = Decimal( 1 / (count_of_possible_words + total_words))
-    return probability
+    for dire in os.listdir(path):
+        dir_path = os.path.join(path, dire)
+        total_words = len(words_in_dir(dir_path))
+        probability = Decimal( 1 / (count_of_possible_words + total_words))
+        absence_dict.update({dire:probability})
+    return absence_dict
 
-def list_test_data(path_test_data):
-    test_list = list()
-    for filename in (os.listdir(path_test_data)):
-        test_file = open("{}/{}".format(path_test_data, filename))
-        contents = test_file.read()
-        words_list_for_test = clean_data(contents)
-        words_list_for_test = list(dict.fromkeys(words_list_for_test)) #remove repeted words
-        test_list.append(words_list_for_test)
-    return test_list
+def list_test_data(path_test_data, filename):
+    words_dict = dict()
+    test_file = open("{}/{}".format(path_test_data, filename))
+    contents = test_file.read()
+    words_list_for_test = clean_data(contents)
+    words_for_test =  dict.fromkeys(words_list_for_test)
+    words_dict.update({filename:words_for_test})
+    return words_dict
 
-def prediction(path_train_data, path_test_data, test_list):
-    #open the first file in test dir and convert that text file in to list of words.
-    #the list dosent contain repeted words and stop words.
+def prediction(trained_data, test_dict, path_train_data, prob_of_absence):
     final_out = dict()
-    #call trained data and convert them in to useable format.
-    trained_words_dict = trained_datas(path_train_data) # format = {matalica :{"hello:4542444, good:45221"}, justin_b:{hello:243}}
-    list_of_dict = list(trained_words_dict.values()) #list contains dict. in that dict we have key as words and values as probability 
-    items = list(trained_words_dict.keys()) #list of items eg: metalica_lyrics ,justin_b....
-    for filename, words_list_for_test in zip(os.listdir(path_test_data), test_list):
-        item_prob = dict()
-        for item, single_dict in zip(items, list_of_dict):
-            mux_list = list()
-            absent = probability_of_absence(path_train_data, item)
-            [mux_list.append(single_dict.get(word)) if word in single_dict
-            else mux_list.append(absent) for word in words_list_for_test]
-
-            probability_mux = 1
-            #multiplyig all the values in list.
-            for prob in mux_list:
-                probability_mux = Decimal(probability_mux * prob)   
+    for file_name, testData in test_dict.items():
+        gerne_prob = dict()   
+        for gerne, trained_dict in trained_data.items():
+            absent = prob_of_absence.get(gerne)
             total_files = count_files(os.listdir(path_train_data), path_train_data)
-            file_count_in_item_dir = len(os.listdir('{}{}'.format(path_train_data, item)))
-            prob_of_item = Decimal(file_count_in_item_dir / total_files)
-            #Result of multiplication finaly multiply with probability of an item
-            final_proba = Decimal(probability_mux * prob_of_item)
-            item_prob.update({item:final_proba})
-        final_out.update({filename:item_prob})
+            file_count_in_gerne_dir = len(os.listdir('{}{}'.format(path_train_data, gerne)))
+            prob_of_gerne = Decimal(file_count_in_gerne_dir / total_files)
+            probability_of_present = 1
+            probability_of_absent = 1
+            for word in testData:
+                if word in trained_dict:
+                    value = trained_dict.get(word)
+                    probability_of_present = Decimal(probability_of_present * value)
+                else:
+                    probability_of_absent = Decimal(probability_of_absent * absent)        
+            probability = Decimal(probability_of_present * probability_of_absent)
+            final_proba = Decimal(probability * prob_of_gerne)
+            gerne_prob.update({gerne:final_proba})
+        final_out.update({file_name:gerne_prob})    
     return final_out
 
 def get_percentage(predicted_data):
-    name_of_songs = predicted_data.keys()
-    list_of_prdiction = predicted_data.values()
     return_dict = dict()
-    for name_of_song, dictionary in zip(name_of_songs, list_of_prdiction):
-        items = dictionary.keys()
-        predicted_values = dictionary.values()
+    for name_of_song, prdictions in predicted_data.items():
+        predicted_values = prdictions.values()
         sum_of_predicted_values = sum(predicted_values)
-        dict_of_percent = dict()
-        for item, predicted_value in zip(items, predicted_values):
+        dict_of_percent = {}
+        for gerne ,predicted_value in prdictions.items():
             try:
                 percentage = (predicted_value / sum_of_predicted_values) * 100
-                dict_of_percent.update({item:percentage})
+                dict_of_percent.update({gerne:percentage})
             except ZeroDivisionError:
                 percentage = 0
         return_dict.update({name_of_song:dict_of_percent})
     return return_dict
 
-def display_status():
-    percentage_data = get_percentage(predicted_data)
-    name_of_songs = percentage_data.keys()
-    length = len(name_of_songs)
-    percentages = percentage_data.values()
+def display_status(percentage_data):
     name_list = list()
     highest_lsit = list()
     success = 0
     wrong = 0
-    for name_of_song, percentage in zip(name_of_songs, percentages):
+    count = 0
+    for name_of_song , percentage in percentage_data.items():
+        count += 1
         highest = max(percentage.items(), key=operator.itemgetter(1))[0]
         print("{} ➩ {}".format(name_of_song, highest ))
         name = name_of_song.split()
@@ -182,16 +172,23 @@ def display_status():
     print()
     print("Your model predict {} success and {} Wrong".format(success, wrong))
     print()
-    success_percentage = (success/length)* 100
+    success_percentage = (success/count)* 100
     print("Your system is {} % accurate".format(success_percentage))
     print()
     print("💖💖 ⮘⮘Thank You⮚⮚ 💖💖")
-
-
-if __name__ == "__main__" :
+    
+def main():
     train_data = path_train_data()
     test_data = path_test_data()
-    test_list = list_test_data(test_data)
-    predicted_data = prediction(train_data, test_data, test_list) 
-    get_percentage(predicted_data)
-    display_status()
+    prob_of_absence = probability_of_absence(train_data)      
+    trained_data = trained_datas(train_data)
+    predicted_data_dict = dict()
+    for filename in os.listdir(test_data):
+        test_dict = list_test_data(test_data, filename)
+        predicted_data = prediction(trained_data, test_dict, train_data, prob_of_absence)
+        predicted_data_dict.update(predicted_data)
+    percentage_data = get_percentage(predicted_data_dict)    
+    display_status(percentage_data)
+
+if __name__ == "__main__" :
+    main()
