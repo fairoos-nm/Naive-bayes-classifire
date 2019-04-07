@@ -15,7 +15,9 @@ There are some files in your cloned folder and they are used for different purpo
 - You can install all the requirements usig: 
 
   #+BEGIN_SRC 
+  
     pip install -r requirements.txt
+    
   #+END_SRC
 
 *Classifier.py*
