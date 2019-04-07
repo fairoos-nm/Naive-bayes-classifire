@@ -57,7 +57,7 @@ def test_prob_of_absent():
     
 
 def test_list_test_data():
-    assert classifier.list_test_data(test_data_dir, "sports data") == {'sports data': {'game': None, 'match': None}}
+    assert classifier.get_words_for_test(test_data_dir, "sports data") == {'sports data': {'game': None, 'match': None}}
 
     
 def test_prediction():
