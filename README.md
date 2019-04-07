@@ -13,6 +13,7 @@ There are some files in your cloned folder and they are used for different purpo
 *requirements.txt*
 - If you want to run this scripts, first of all you must install all the requirements.
 - You can install all the requirements usig: 
+
   #+BEGIN_SRC 
     pip install -r requirements.txt
   #+END_SRC
@@ -20,10 +21,10 @@ There are some files in your cloned folder and they are used for different purpo
 *Classifier.py*
 - This is the core part of this program. 
 - Here it train the available data and predict test data belongs to which artist
-- It displayes folowing:
->> Table of prediction status.
->> Accuracy of your system.
->> Print no of worng and sucess predictions.
+It displayes folowing:
+- Table of prediction status.
+-  Accuracy of your system.
+- Print no of worng and sucess predictions.
 
 *Simple explanation about other files and folders.*
 
