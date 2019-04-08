@@ -118,6 +118,8 @@ def get_words_for_test(path_test_data, filename):
     words.update({filename:words_for_test})
     return words
 
+#In train data directory, some subdirectories be there. subdirectories are in the name of artists.
+
 def predict(trained_data, test_data, path_train_data, prob_of_absence):
     """predict given song belonges to which artist using trained data"""
     prediction = dict()
@@ -167,8 +169,8 @@ def display_status(percentage_data):
         count += 1
         HighestPercentageGenre = max(percentage.items(), key=operator.itemgetter(1))[0]
         table.add_row([name_of_song, HighestPercentageGenre])
-        #In our data every song's name start with thair genre names.
-        #If song's first name and HighestPercentageGenre are start with same name we can decide thath this prediction is correct.
+        #In our data every song's name start with thair artist's name and directory in test data are in the name of artist.
+        #If song's first name and HighestPercentageGenre(highest probability artist) are start with same name we can decide thath this prediction is correct.
         name = name_of_song.split()
         highest = HighestPercentageGenre.split()
         name = name[0].lower()
