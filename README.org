@@ -37,6 +37,6 @@ It displayes folowing:
 - pytest_data : demo data for pytest
 - test_classifier.py : test file for classifier.py and status_test.py
 
-*Reference.
+*Reference*
 
 -https://monkeylearn.com/blog/practical-explanation-naive-bayes-classifier/
